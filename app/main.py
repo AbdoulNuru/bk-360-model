@@ -2,7 +2,6 @@
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 from app.customer_store import find_customer_by_account, find_customers_by_accounts, get_all_customers
@@ -15,7 +14,7 @@ app = FastAPI()
 # Read comma-separated origins from env, or default to localhost dev
 origins = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:5173,http://localhost:5174"
+    "http://localhost:5173,http://localhost:5174,https://bk-360-model.onrender.com"
 ).split(",")
 
 app.add_middleware(
