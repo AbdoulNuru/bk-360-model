@@ -20,4 +20,4 @@ dist/
 .idea/
 
 # environment variables / secrets
-.env
+.env.venv/
