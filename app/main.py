@@ -1,5 +1,5 @@
 # app/main.py
-
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,17 +7,20 @@ from pydantic import BaseModel
 from typing import List
 from app.customer_store import find_customer_by_account, find_customers_by_accounts, get_all_customers
 from app.recommend_engine import score_customer
+from dotenv import load_dotenv
 
-
+load_dotenv()
 app = FastAPI()
 
-origins = [
-    "http://localhost:5173", "http://localhost:5174"
-]
+# Read comma-separated origins from env, or default to localhost dev
+origins = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:5173,http://localhost:5174"
+).split(",")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # or ["*"] for all origins (use with caution)
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
