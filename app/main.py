@@ -2,14 +2,19 @@
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Body
 from pydantic import BaseModel
 from typing import List
 from app.customer_store import find_customer_by_account, find_customers_by_accounts, get_all_customers
 from app.recommend_engine import score_customer
 from dotenv import load_dotenv
+from app.analytics import router as analytics_router, start_analytics_updater
+
 
 load_dotenv()
 app = FastAPI()
+app.include_router(analytics_router)
+start_analytics_updater()
 
 # Read comma-separated origins from env, or default to localhost dev
 origins = os.getenv(
@@ -48,7 +53,7 @@ class BatchRequest(BaseModel):
     account_numbers: List[str]
 
 @app.post("/recommend-batch")
-def recommend_batch(data: BatchRequest):
+def recommend_batch(data: BatchRequest = Body(...)):
     filtered = find_customers_by_accounts(data.account_numbers)
     if filtered.empty:
         raise HTTPException(status_code=404, detail="No matching account numbers")
@@ -63,7 +68,7 @@ def recommend_batch(data: BatchRequest):
             "cluster": cluster,
             "recommended_products": [
                 {"name": name, "reason": reason} for name, reason in recs
-            ]
+            ],
         })
     return output
 
